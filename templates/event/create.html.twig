@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="bg-gray-50 dark:bg-gray-900">
+        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+
+
+            {{ dump(app.user.futureEvents) }}
+
+            <div class="flex justify-center my-5">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                    <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                        {{ form_start(eventForm) }}
+                        {{ form_row(eventForm.title) }}
+                        {{ form_row(eventForm.startAt) }}
+                        {{ form_row(eventForm.endAt) }}
+                        <button type="submit"
+                                class="block w-full px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            save
+                        </button>
+                        {{ form_end(eventForm) }}
+                    </div>
+
+
+                    {% for item in app.user.events|batch(2) %}
+                        <div class="grid gap-4">
+                            {% for event in item %}
+                                <a href="{{ path('show_event', {id: event.id}) }}"
+                                   class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+
+                                    {% if event.isAttending(app.user) %}
+                                        <div class="text-red-600 font-bold">You are going!!!</div>
+                                    {% endif %}
+
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event.title }}</h5>
+                                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ event.startAt|format_datetime }}
+                                        - {{ event.endAt|format_datetime }}</p>
+
+                                    <div>{{ event.owner.email }}</div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="h-auto text-center max-w text-gray-400 p-6  border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                            {{ 'no-events-found'|trans }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
