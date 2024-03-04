@@ -33,26 +33,18 @@ class EventParticipant
     #[ORM\Column(length: 255, enumType: EventParticipantTypeEnum::class)]
     private null|EventParticipantTypeEnum $type = EventParticipantTypeEnum::EVENT_PARTICIPANT;
 
-
-    /**
-     * @param Event|null $event
-     * @param User|null $owner
-     * @param EventParticipantTypeEnum|null $type
-     */
     public function __construct(
-        null|Event                    $event = null,
-        null|User                     $owner = null,
-        null|User                     $target = null,
+        null|Event $event = null,
+        null|User $owner = null,
+        null|User $target = null,
         null|EventParticipantTypeEnum $type = null
-    )
-    {
+    ) {
         $this->event = $event;
         $this->owner = $owner;
         $this->target = $owner;
         $this->type = $type;
         $this->createdAt = new \DateTimeImmutable();
     }
-
 
     public function getId(): null|Uuid
     {

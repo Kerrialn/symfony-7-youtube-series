@@ -38,18 +38,12 @@ class Event
     #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'event')]
     private Collection $eventParticipants;
 
-    /**
-     * @param string|null $title
-     * @param DateTimeImmutable|null $startAt
-     * @param DateTimeImmutable|null $endAt
-     * @param User|null $owner
-     */
     public function __construct(
-        null|string            $title = null,
+        null|string $title = null,
         null|DateTimeImmutable $startAt = null,
         null|DateTimeImmutable $endAt = null,
-        null|User              $owner = null)
-    {
+        null|User $owner = null
+    ) {
         $this->title = $title;
         $this->startAt = $startAt;
         $this->endAt = $endAt;
@@ -57,7 +51,6 @@ class Event
         $this->createdAt = new DateTimeImmutable();
         $this->eventParticipants = new ArrayCollection();
     }
-
 
     public function getId(): null|Uuid
     {
@@ -134,7 +127,7 @@ class Event
 
     public function addEventParticipant(EventParticipant $eventParticipant): static
     {
-        if (!$this->eventParticipants->contains($eventParticipant)) {
+        if (! $this->eventParticipants->contains($eventParticipant)) {
             $this->eventParticipants->add($eventParticipant);
             $eventParticipant->setEvent($this);
         }
@@ -154,10 +147,8 @@ class Event
         return $this;
     }
 
-
     public function getIsAttending(User $user): bool
     {
-        return $this->eventParticipants->exists(fn(int $key, EventParticipant $eventParticipant): bool => $eventParticipant->getTarget() === $user);
+        return $this->eventParticipants->exists(fn (int $key, EventParticipant $eventParticipant): bool => $eventParticipant->getTarget() === $user);
     }
-
 }

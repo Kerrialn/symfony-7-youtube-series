@@ -4,7 +4,6 @@ namespace App\Entity\User;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventParticipant;
-use App\Enum\EventParticipantTypeEnum;
 use App\Repository\User\UserRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -82,13 +81,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     /**
      * @return list<string>
      * @see UserInterface
-     *
      */
     public function getRoles(): array
     {
@@ -143,7 +141,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEvent(Event $event): static
     {
-        if (!$this->events->contains($event)) {
+        if (! $this->events->contains($event)) {
             $this->events->add($event);
             $event->setOwner($this);
         }
@@ -173,7 +171,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addSentParticipation(EventParticipant $eventParticipation): static
     {
-        if (!$this->sentParticipations->contains($eventParticipation)) {
+        if (! $this->sentParticipations->contains($eventParticipation)) {
             $this->sentParticipations->add($eventParticipation);
             $eventParticipation->setOwner($this);
         }
@@ -203,7 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addReciviedParticipation(EventParticipant $eventParticipant): static
     {
-        if (!$this->reciviedParticipations->contains($eventParticipant)) {
+        if (! $this->reciviedParticipations->contains($eventParticipant)) {
             $this->reciviedParticipations->add($eventParticipant);
             $eventParticipant->setTarget($this);
         }
@@ -223,10 +221,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-    public function getFutureEvents() : ArrayCollection
+    public function getFutureEvents(): ArrayCollection
     {
-        return $this->events->filter(fn(Event $event) : bool => new DateTimeImmutable() < $event->getStartAt());
+        return $this->events->filter(fn (Event $event): bool => new DateTimeImmutable() < $event->getStartAt());
     }
-
 }

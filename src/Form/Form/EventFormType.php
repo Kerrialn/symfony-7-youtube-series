@@ -14,10 +14,10 @@ class EventFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title', TextType::class,[
+            ->add('title', TextType::class, [
                 'attr' => [
-                    'autocomplete' => 'off'
-                ]
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('startAt', DateTimeType::class)
             ->add('endAt', DateTimeType::class, [

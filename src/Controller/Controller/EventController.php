@@ -17,13 +17,10 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class EventController extends AbstractController
 {
-
-
     public function __construct(
-        private readonly EventRepository            $eventRepository,
+        private readonly EventRepository $eventRepository,
         private readonly EventParticipantRepository $eventParticipantRepository
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/events', name: 'create_event')]
@@ -39,10 +36,9 @@ class EventController extends AbstractController
         }
 
         return $this->render('event/create.html.twig', [
-            'eventForm' => $eventForm
+            'eventForm' => $eventForm,
         ]);
     }
-
 
     #[Route(path: '/events/{id}', name: 'show_event')]
     public function show(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
@@ -52,16 +48,15 @@ class EventController extends AbstractController
 
         $eventParticipantForm->handleRequest($request);
         if ($eventParticipantForm->isSubmitted() && $eventParticipantForm->isValid()) {
-
             $this->eventParticipantRepository->save($eventParticipant, true);
-            return $this->redirectToRoute('show_event', ['id' => $event->getId()]);
-
+            return $this->redirectToRoute('show_event', [
+                'id' => $event->getId(),
+            ]);
         }
 
         return $this->render('event/show.html.twig', [
             'event' => $event,
-            'eventParticipantForm' => $eventParticipantForm
+            'eventParticipantForm' => $eventParticipantForm,
         ]);
     }
-
 }
