@@ -27,7 +27,7 @@
 
 docker-compose.override.yml
 .sync
-docker/db/data/
+docker/
 
 ###> phpstan/phpstan ###
 phpstan.neon
