@@ -4,9 +4,12 @@ namespace App\Entity\Event;
 
 use App\Entity\User\User;
 use App\Repository\Event\EventRepository;
+use Carbon\CarbonImmutable;
+use Carbon\Doctrine\CarbonImmutableType;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -39,11 +42,12 @@ class Event
     private Collection $eventParticipants;
 
     public function __construct(
-        null|string $title = null,
+        null|string            $title = null,
         null|DateTimeImmutable $startAt = null,
         null|DateTimeImmutable $endAt = null,
-        null|User $owner = null
-    ) {
+        null|User              $owner = null
+    )
+    {
         $this->title = $title;
         $this->startAt = $startAt;
         $this->endAt = $endAt;
@@ -127,7 +131,7 @@ class Event
 
     public function addEventParticipant(EventParticipant $eventParticipant): static
     {
-        if (! $this->eventParticipants->contains($eventParticipant)) {
+        if (!$this->eventParticipants->contains($eventParticipant)) {
             $this->eventParticipants->add($eventParticipant);
             $eventParticipant->setEvent($this);
         }
@@ -149,6 +153,24 @@ class Event
 
     public function getIsAttending(User $user): bool
     {
-        return $this->eventParticipants->exists(fn (int $key, EventParticipant $eventParticipant): bool => $eventParticipant->getTarget() === $user);
+        return $this->eventParticipants->exists(fn(int $key, EventParticipant $eventParticipant): bool => $eventParticipant->getTarget() === $user);
+    }
+
+    public function getAttendingUser(User $user): null|EventParticipant
+    {
+        return $this->eventParticipants->findFirst(fn(int $key, EventParticipant $eventParticipant): bool => $eventParticipant->getTarget() === $user);
+    }
+
+    public function getParticipantsAddedInLast24Hours() : ArrayCollection
+    {
+        $criteria = Criteria::create();
+        $expr = Criteria::expr();
+        $now = new CarbonImmutable();
+
+        $criteria->andWhere(
+            $expr->gt('createdAt', $now->subHours(24))
+        );
+
+        return $this->eventParticipants->matching($criteria);
     }
 }

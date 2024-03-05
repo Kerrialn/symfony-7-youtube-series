@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+  php:
+    image: ghcr.io/eventpoints/php:main
+    platform: linux/amd64
+    volumes:
+      - .:/app:cached
+      - php_socket:/var/run/php
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - database
+
+  caddy:
+    image: ghcr.io/eventpoints/caddy:main
+    platform: linux/amd64
+    depends_on:
+      - php
+    environment:
+      SERVER_NAME: localhost, caddy:80
+      MERCURE_PUBLIC_URL: "https://localhost/.well-known/mercure"
+      MERCURE_PUBLISHER_JWT_KEY: secret
+      MERCURE_SUBSCRIBER_JWT_KEY: secret
+    volumes:
+      - php_socket:/var/run/php
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./public:/app/public
+    ports:
+      # HTTP
+      - target: 80
+        published: 80
+        protocol: tcp
+      # HTTPS
+      - target: 443
+        published: 443
+        protocol: tcp
+      # HTTP/3
+      - target: 443
+        published: 443
+        protocol: udp
+
+  asset-mapper-watch:
+    image: ghcr.io/eventpoints/php:main
+    platform: linux/amd64
+    volumes:
+      - .:/app:cached
+    working_dir: /app
+    entrypoint: [ "" ]
+    command: "bash -c 'bin/console tailwind:build --watch'"
+
+  database:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: symfony_seven_youtube_series
+      POSTGRES_PASSWORD: symfony_seven_youtube_series
+      POSTGRES_USER: root
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data:rw
+
+  adminer:
+    image: adminer:4.8.0
+    ports:
+      - "8000:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: database
+    depends_on:
+      - database
+
+volumes:
+  php_socket:
+  caddy_data:
+  caddy_config:
