@@ -25,6 +25,10 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
+docker-compose.override.yml
+.sync
+docker/db/data/
+
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
