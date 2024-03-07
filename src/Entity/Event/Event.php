@@ -5,11 +5,12 @@ namespace App\Entity\Event;
 use App\Entity\User\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
-use Carbon\Doctrine\CarbonImmutableType;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -26,18 +27,21 @@ class Event
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column]
-    private ?DateTimeImmutable $startAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?CarbonImmutable $startAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?DateTimeImmutable $endAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?CarbonImmutable $endAt = null;
 
-    #[ORM\Column]
-    private ?DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?CarbonImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     private ?User $owner = null;
 
+    /**
+     * @var ArrayCollection<EventParticipant> $eventParticipants
+     */
     #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'event')]
     private Collection $eventParticipants;
 
@@ -52,7 +56,7 @@ class Event
         $this->startAt = $startAt;
         $this->endAt = $endAt;
         $this->owner = $owner;
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
         $this->eventParticipants = new ArrayCollection();
     }
 
@@ -73,36 +77,36 @@ class Event
         return $this;
     }
 
-    public function getStartAt(): ?DateTimeImmutable
+    public function getStartAt(): null|CarbonImmutable
     {
         return $this->startAt;
     }
 
-    public function setStartAt(DateTimeImmutable $startAt): static
+    public function setStartAt(CarbonImmutable $startAt): static
     {
         $this->startAt = $startAt;
 
         return $this;
     }
 
-    public function getEndAt(): ?DateTimeImmutable
+    public function getEndAt(): null|CarbonImmutable
     {
         return $this->endAt;
     }
 
-    public function setEndAt(?DateTimeImmutable $endAt): static
+    public function setEndAt(null|CarbonImmutable $endAt): static
     {
         $this->endAt = $endAt;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(null|CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
@@ -165,7 +169,7 @@ class Event
     {
         $criteria = Criteria::create();
         $expr = Criteria::expr();
-        $now = new CarbonImmutable();
+        $now = new DateTimeImmutable();
 
         $criteria->andWhere(
             $expr->gt('createdAt', $now->subHours(24))
@@ -173,4 +177,16 @@ class Event
 
         return $this->eventParticipants->matching($criteria);
     }
+
+    public function hasStarted() : bool
+    {
+        return $this->getStartAt()->lessThanOrEqualTo(new CarbonImmutable());
+    }
+
+    public function isInProgress() : bool
+    {
+        return (new CarbonImmutable())->isBetween($this->getStartAt(), $this->getEndAt());
+    }
+
+
 }

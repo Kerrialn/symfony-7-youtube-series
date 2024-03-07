@@ -8,6 +8,7 @@ use App\Repository\User\UserRepository;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -49,6 +50,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'target')]
     private Collection $reciviedParticipations;
+
+    #[ORM\Column(type: Types::TEXT,nullable: true)]
+    private ?string $avatar = null;
 
     public function __construct()
     {
@@ -225,4 +229,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->events->filter(fn (Event $event): bool => new DateTimeImmutable() < $event->getStartAt());
     }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(string $avatar): static
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
 }
