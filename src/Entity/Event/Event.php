@@ -28,13 +28,13 @@ class Event
     private ?string $title = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?CarbonImmutable $startAt = null;
+    private null|DateTimeImmutable|CarbonImmutable $startAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?CarbonImmutable $endAt = null;
+    private null|DateTimeImmutable|CarbonImmutable $endAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?CarbonImmutable $createdAt = null;
+    private null|CarbonImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     private ?User $owner = null;
@@ -42,20 +42,35 @@ class Event
     /**
      * @var ArrayCollection<EventParticipant> $eventParticipants
      */
-    #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'event')]
+    #[ORM\OneToMany(targetEntity: EventParticipant::class, mappedBy: 'event', cascade: ['persist'])]
     private Collection $eventParticipants;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $latitude = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $longitude = null;
 
     public function __construct(
         null|string            $title = null,
         null|DateTimeImmutable $startAt = null,
         null|DateTimeImmutable $endAt = null,
-        null|User              $owner = null
+        null|User              $owner = null,
+        null|string            $address = null,
+        null|string            $latitude = null,
+        null|string            $longitude = null,
     )
     {
         $this->title = $title;
         $this->startAt = $startAt;
         $this->endAt = $endAt;
         $this->owner = $owner;
+        $this->address = $address;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
         $this->createdAt = new CarbonImmutable();
         $this->eventParticipants = new ArrayCollection();
     }
@@ -77,24 +92,24 @@ class Event
         return $this;
     }
 
-    public function getStartAt(): null|CarbonImmutable
+    public function getStartAt(): null|DateTimeImmutable|CarbonImmutable
     {
         return $this->startAt;
     }
 
-    public function setStartAt(CarbonImmutable $startAt): static
+    public function setStartAt(null|DateTimeImmutable|CarbonImmutable $startAt): static
     {
         $this->startAt = $startAt;
 
         return $this;
     }
 
-    public function getEndAt(): null|CarbonImmutable
+    public function getEndAt(): null|DateTimeImmutable|CarbonImmutable
     {
         return $this->endAt;
     }
 
-    public function setEndAt(null|CarbonImmutable $endAt): static
+    public function setEndAt(null|DateTimeImmutable|CarbonImmutable $endAt): static
     {
         $this->endAt = $endAt;
 
@@ -165,7 +180,7 @@ class Event
         return $this->eventParticipants->findFirst(fn(int $key, EventParticipant $eventParticipant): bool => $eventParticipant->getTarget() === $user);
     }
 
-    public function getParticipantsAddedInLast24Hours() : ArrayCollection
+    public function getParticipantsAddedInLast24Hours(): ArrayCollection
     {
         $criteria = Criteria::create();
         $expr = Criteria::expr();
@@ -178,14 +193,50 @@ class Event
         return $this->eventParticipants->matching($criteria);
     }
 
-    public function hasStarted() : bool
+    public function hasStarted(): bool
     {
         return $this->getStartAt()->lessThanOrEqualTo(new CarbonImmutable());
     }
 
-    public function isInProgress() : bool
+    public function isInProgress(): bool
     {
         return (new CarbonImmutable())->isBetween($this->getStartAt(), $this->getEndAt());
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?string
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(string $latitude): static
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?string
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(string $longitude): static
+    {
+        $this->longitude = $longitude;
+
+        return $this;
     }
 
 

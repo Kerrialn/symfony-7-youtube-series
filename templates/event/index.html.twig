@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="bg-gray-50 dark:bg-gray-900">
+        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+
+            <div class="text-center">
+                <a class="w-full text-white bg-blue-700 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                   href="{{ path('create_event', {step: 'details'}) }}">{{ 'create-event'|trans }}</a>
+            </div>
+
+
+            <div class="flex justify-center my-5">
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+
+                    {% for item in app.user.events|batch(2) %}
+                        <div class="grid gap-4">
+                            {% for event in item %}
+
+                                <a href="{{ path('show_event', {id: event.id}) }}"
+                                   class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+
+                                    {% if event.isAttending(app.user) %}
+                                        <div class="text-red-600 font-bold">You are going!!!</div>
+                                    {% endif %}
+
+                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event.title }}</h5>
+                                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ event.startAt|format_datetime }}
+                                        - {{ event.endAt|format_datetime }}</p>
+
+                                    <div>{{ event.owner.email }}</div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="h-auto text-center max-w text-gray-400 p-6  border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                            {{ 'no-events-found'|trans }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

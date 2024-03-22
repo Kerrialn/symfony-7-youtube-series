@@ -31,17 +31,17 @@ class EventParticipant
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255, enumType: EventParticipantTypeEnum::class)]
-    private null|EventParticipantTypeEnum $type = EventParticipantTypeEnum::EVENT_PARTICIPANT;
+    private null|EventParticipantTypeEnum $type;
 
     public function __construct(
         null|Event $event = null,
         null|User $owner = null,
         null|User $target = null,
-        null|EventParticipantTypeEnum $type = null
+        null|EventParticipantTypeEnum $type = EventParticipantTypeEnum::EVENT_PARTICIPANT
     ) {
         $this->event = $event;
         $this->owner = $owner;
-        $this->target = $owner;
+        $this->target = $target;
         $this->type = $type;
         $this->createdAt = new \DateTimeImmutable();
     }

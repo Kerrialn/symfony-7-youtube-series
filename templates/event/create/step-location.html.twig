@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="bg-gray-50 dark:bg-gray-900">
+        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
+
+
+            <div class="w-full sm:max-w-md ">
+                <h1 class="text-xl mb-3 font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                    Event Location
+                </h1>
+                {{ form_start(form) }}
+                {{ form_row(form.address) }}
+                {{ form_row(form.latitude) }}
+                {{ form_row(form.longitude) }}
+                <div class="flex justify-between items-center">
+                    <a href="{{ path('create_event', {step: 'details'}) }}"
+                       class="block w-full px-3 me-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        back
+                    </a>
+                    <button type="submit"
+                            class="block w-full  px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        next
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
