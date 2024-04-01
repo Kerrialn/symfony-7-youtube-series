@@ -54,12 +54,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT,nullable: true)]
     private ?string $avatar = null;
 
-    public function __construct()
+    /**
+     * @param string|null $email
+     */
+    public function __construct(?string $email)
     {
+        $this->email = $email;
         $this->events = new ArrayCollection();
         $this->sentParticipations = new ArrayCollection();
         $this->reciviedParticipations = new ArrayCollection();
     }
+
 
     public function getId(): null|Uuid
     {

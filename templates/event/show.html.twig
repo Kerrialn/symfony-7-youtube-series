@@ -6,6 +6,14 @@
 
 
 
+            <div {{ stimulus_controller('hello', {
+                token: 'djwa73km10231dw0a832n82190231d'
+            }) }}>
+                <div class="text-red-600" {{ stimulus_target('hello', 'output') }}></div>
+
+                <button {{ stimulus_action('hello', 'updateToken', 'click') }} >change</button>
+            </div>
+
             <div class="max-w-sm mb-3 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 
                 <div class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event.title }}</div>
