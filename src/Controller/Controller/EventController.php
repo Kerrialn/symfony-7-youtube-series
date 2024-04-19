@@ -15,12 +15,16 @@ use App\Form\Form\Event\EventLocationFormType;
 use App\Form\Form\EventParticipantFormType;
 use App\Repository\Event\EventParticipantRepository;
 use App\Repository\Event\EventRepository;
+use App\Service\EmailService\EmailService;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -35,9 +39,22 @@ class EventController extends AbstractController
         private readonly EventRepository            $eventRepository,
         private readonly EventFactory               $eventFactory,
         private readonly EventParticipantRepository $eventParticipantRepository,
-        private readonly RequestStack               $requestStack
+        private readonly RequestStack               $requestStack,
+        private readonly EmailService               $emailService,
     )
     {
+    }
+
+
+
+    #[Route(path: '/event-list', name: 'event_list')]
+    public function list(Request $request): Response
+    {
+        $keyword = $request->get('q');
+        $events = $this->eventRepository->findByKeyword(keyword: $keyword);
+        return $this->render('event/list.html.twig',[
+            'events' => $events
+        ]);
     }
 
     #[Route(path: '/events', name: 'events')]

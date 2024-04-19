@@ -42,4 +42,18 @@ class EventRepository extends ServiceEntityRepository
                 ->flush();
         }
     }
+
+    /**
+     * @param string $keyword
+     * @return array<int, Event>
+     */
+    public function findByKeyword(string $keyword): array
+    {
+        $qb = $this->createQueryBuilder('event');
+        $qb->andWhere(
+            $qb->expr()->like($qb->expr()->lower('event.title'), ':keyword')
+        )->setParameter('keyword', '%' . strtolower($keyword) . '%');
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -37,4 +37,7 @@ return [
         'version' => '2.3.0',
         'type' => 'css',
     ],
+    'htmx.org' => [
+        'version' => '1.9.11',
+    ],
 ];

@@ -1,6 +1,12 @@
 version: '3.9'
 
 services:
+###> php ###
+  php:
+    environment:
+      XDEBUG_MODE: debug
+###> php ###
+
 ###> doctrine/doctrine-bundle ###
   database:
     ports:

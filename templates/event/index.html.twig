@@ -1,55 +1,81 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="bg-gray-50 dark:bg-gray-900">
-        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-
-            <div class="text-center">
-                <a class="w-full text-white bg-blue-700 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                   href="{{ path('create_event', {step: 'details'}) }}">{{ 'create-event'|trans }}</a>
-            </div>
+    <div class="">
 
 
-            <div class="flex justify-center my-5">
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-                    <div class="text-white" {{ stimulus_controller('location') }}>
-                        <div {{ stimulus_target('location', 'output') }} ></div>
-                        <button {{ stimulus_target('location', 'btn') }} {{ stimulus_action('location', 'getCurrentLocation', 'click') }} class="w-full text-white bg-blue-700 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                            current location
-                        </button>
-                    </div>
-
-
-                    {% for item in app.user.events|batch(2) %}
-                        <div class="grid gap-4">
-                            {% for event in item %}
-
-                                <a href="{{ path('show_event', {id: event.id}) }}"
-                                   class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-
-                                    {% if event.isAttending(app.user) %}
-                                        <div class="text-red-600 font-bold">You are going!!!</div>
-                                    {% endif %}
-
-                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event.title }}</h5>
-                                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ event.startAt|format_datetime }}
-                                        - {{ event.endAt|format_datetime }}</p>
-
-                                    <div>{{ event.owner.email }}</div>
-                                </a>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="h-auto text-center max-w text-gray-400 p-6  border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                            {{ 'no-events-found'|trans }}
-                        </div>
-                    {% endfor %}
+        <form class="max-w-md mx-auto mt-5">
+            <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
                 </div>
+                <input autocomplete="off" type="search"  name="q" id="default-search"  hx-get="{{ path('event_list') }}" hx-trigger="keyup delay:500ms changed" hx-target="#search-results" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Mockups, Logos..." required />
+                <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
             </div>
+            <div class="max-w mt-3" id="search-results"></div>
+        </form>
 
-        </div>
+
+{#        <div class="flex flex-row text-red-600">#}
+{#            <div class="me-4">{{ app.session.get('timezone')|timezone_name }}</div>#}
+{#            <div class="me-4">{{ app.session.get('currency')|upper }}</div>#}
+{#            <div>{{ app.session.get('_locale')|upper }}</div>#}
+{#        </div>#}
+
+{#        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">#}
+
+{#            <div class="text-center">#}
+{#                <a class="w-full text-white bg-blue-700 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"#}
+{#                   href="{{ path('create_event', {step: 'details'}) }}">{{ 'create-event'|trans }}</a>#}
+
+{#                <a class="w-full text-white bg-blue-700 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"#}
+{#                   href="{{ path('regional_settings') }}">{{ 'regional-settings'|trans }}</a>#}
+{#            </div>#}
+
+
+{#            <div class="flex justify-center my-5">#}
+{#                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">#}
+
+{#                    <div class="text-white" {{ stimulus_controller('location') }}>#}
+{#                        <div {{ stimulus_target('location', 'output') }} ></div>#}
+{#                        <button {{ stimulus_target('location', 'btn') }} {{ stimulus_action('location', 'getCurrentLocation', 'click') }}#}
+{#                                class="w-full text-white bg-blue-700 hover:bg-blue-900 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">#}
+{#                            current location#}
+{#                        </button>#}
+{#                    </div>#}
+
+
+{#                    {% for item in app.user.events|batch(2) %}#}
+{#                        <div class="grid gap-4">#}
+{#                            {% for event in item %}#}
+
+{#                                <a href="{{ path('show_event', {id: event.id}) }}"#}
+{#                                   class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">#}
+
+{#                                    {% if event.isAttending(app.user) %}#}
+{#                                        <div class="text-red-600 font-bold">You are going!!!</div>#}
+{#                                    {% endif %}#}
+
+{#                                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ event.title }}</h5>#}
+{#                                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ event.startAt|format_datetime }}#}
+{#                                        - {{ event.endAt|format_datetime }}</p>#}
+
+{#                                    <div>{{ event.owner.email }}</div>#}
+{#                                </a>#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    {% else %}#}
+{#                        <div class="h-auto text-center max-w text-gray-400 p-6  border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">#}
+{#                            {{ 'no-events-found'|trans }}#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#            </div>#}
+
+{#        </div>#}
     </div>
 
 {% endblock %}

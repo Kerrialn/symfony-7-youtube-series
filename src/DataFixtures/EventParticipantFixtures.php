@@ -13,7 +13,6 @@ use Doctrine\Persistence\ObjectManager;
 class EventParticipantFixtures extends Fixture implements DependentFixtureInterface
 {
 
-
     public function load(ObjectManager $manager): void
     {
         foreach ($this->getEventParcitipantData() as $data) {
